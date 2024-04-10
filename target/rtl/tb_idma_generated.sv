@@ -250,11 +250,11 @@ module tb_idma_backend_rw_axi import idma_pkg::*; #(
         axi_pkg::resp_t werr[addr_t];
     } dummy_mem_t;
 
-    dummy_mem_t i_obi_axi_sim_mem;
-    dummy_mem_t i_axil_axi_sim_mem;
-    dummy_mem_t i_init_axi_sim_mem;
-    dummy_mem_t i_axis_axi_sim_mem;
     dummy_mem_t i_tilelink_axi_sim_mem;
+    dummy_mem_t i_init_axi_sim_mem;
+    dummy_mem_t i_axil_axi_sim_mem;
+    dummy_mem_t i_axis_axi_sim_mem;
+    dummy_mem_t i_obi_axi_sim_mem;
 
     //--------------------------------------
     // TB Monitors
@@ -959,9 +959,9 @@ module tb_idma_backend_r_obi_w_axi import idma_pkg::*; #(
     } dummy_mem_t;
 
     dummy_mem_t i_init_axi_sim_mem;
-    dummy_mem_t i_axil_axi_sim_mem;
-    dummy_mem_t i_tilelink_axi_sim_mem;
     dummy_mem_t i_axis_axi_sim_mem;
+    dummy_mem_t i_tilelink_axi_sim_mem;
+    dummy_mem_t i_axil_axi_sim_mem;
 
     //--------------------------------------
     // TB Monitors
@@ -1734,8 +1734,8 @@ module tb_idma_backend_r_axi_w_obi import idma_pkg::*; #(
     } dummy_mem_t;
 
     dummy_mem_t i_init_axi_sim_mem;
-    dummy_mem_t i_axis_axi_sim_mem;
     dummy_mem_t i_tilelink_axi_sim_mem;
+    dummy_mem_t i_axis_axi_sim_mem;
     dummy_mem_t i_axil_axi_sim_mem;
 
     //--------------------------------------
@@ -2535,9 +2535,9 @@ module tb_idma_backend_rw_axi_rw_axis import idma_pkg::*; #(
     } dummy_mem_t;
 
     dummy_mem_t i_axil_axi_sim_mem;
-    dummy_mem_t i_obi_axi_sim_mem;
     dummy_mem_t i_init_axi_sim_mem;
     dummy_mem_t i_tilelink_axi_sim_mem;
+    dummy_mem_t i_obi_axi_sim_mem;
 
     //--------------------------------------
     // TB Monitors
@@ -3607,9 +3607,9 @@ typedef struct packed {
         axi_pkg::resp_t werr[addr_t];
     } dummy_mem_t;
 
+    dummy_mem_t i_tilelink_axi_sim_mem;
     dummy_mem_t i_axis_axi_sim_mem;
     dummy_mem_t i_axil_axi_sim_mem;
-    dummy_mem_t i_tilelink_axi_sim_mem;
 
     //--------------------------------------
     // TB Monitors
@@ -4603,8 +4603,8 @@ typedef struct packed {
         axi_pkg::resp_t werr[addr_t];
     } dummy_mem_t;
 
-    dummy_mem_t i_tilelink_axi_sim_mem;
     dummy_mem_t i_axis_axi_sim_mem;
+    dummy_mem_t i_tilelink_axi_sim_mem;
     dummy_mem_t i_axil_axi_sim_mem;
 
     //--------------------------------------
