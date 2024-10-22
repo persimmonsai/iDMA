@@ -370,9 +370,11 @@ module idma_legalizer #(
             wdata: '0
         };
     end else begin : gen_ar_aw_req_error
+`ifndef TARGET_FORMALITY
         `IDMA_NONSYNTH_BLOCK(
         $fatal(1, "Legalizer: `AR-AW_req` not implemented for requested protocol!");
         )
+`endif
     end
 
     // assign the signals needed to set-up the read data path
@@ -400,9 +402,11 @@ module idma_legalizer #(
             is_single: 1'b1
         };
     end else begin : gen_w_dp_req_error
+`ifndef TARGET_FORMALITY
         `IDMA_NONSYNTH_BLOCK(
         $fatal(1, "Legalizer: `W-DP_req` not implemented for requested protocol!");
         )
+`endif
     end
 
     // last burst in generic 1D transfer?

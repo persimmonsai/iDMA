@@ -237,13 +237,14 @@ module idma_nd_midend #(
     //--------------------------------------
     // Assertions
     //--------------------------------------
+`ifndef TARGET_FORMALITY
     `IDMA_NONSYNTH_BLOCK(
     initial begin : proc_assert_params
         num_dim : assert(NumDim >= 32'd2) else
             $fatal(1, "Parameter `NumDim` has to be >= 2!");
     end
     )
-
+`endif
 endmodule : idma_nd_midend
 
 

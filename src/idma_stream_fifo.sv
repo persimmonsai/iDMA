@@ -37,6 +37,7 @@ module idma_stream_fifo #(
     // Prevent Depth 0 and 1
     //--------------------------------------
     // Throw an error if depth is 0 or 1
+`ifndef TARGET_FORMALITY
     `IDMA_NONSYNTH_BLOCK(
     if (Depth < 32'd2) begin : gen_fatal
         initial begin
@@ -44,13 +45,13 @@ module idma_stream_fifo #(
         end
     end
     )
-
+`endif
     //--------------------------------------
     // Spill register (depth 2)
     //--------------------------------------
     // Instantiate a spill register for depth 2
     if (Depth == 32'd2) begin : gen_spill
-
+`ifndef TARGET_FORMALITY
         // print info
         `IDMA_NONSYNTH_BLOCK(
         if (PrintInfo) begin : gen_info
@@ -59,7 +60,7 @@ module idma_stream_fifo #(
             end
         end
         )
-
+`endif
         // spill register
         spill_register_flushable #(
             .T       ( type_t ),
@@ -91,7 +92,7 @@ module idma_stream_fifo #(
     //--------------------------------------
     // default to stream fifo
     if (Depth > 32'd2) begin : gen_fifo
-
+`ifndef TARGET_FORMALITY
         // print info
         `IDMA_NONSYNTH_BLOCK(
         if (PrintInfo) begin : gen_info
@@ -100,7 +101,7 @@ module idma_stream_fifo #(
             end
         end
         )
-
+`endif
         // stream fifo
         stream_fifo #(
             .DEPTH        ( Depth  ),

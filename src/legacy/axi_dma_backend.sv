@@ -70,7 +70,7 @@ module axi_dma_backend #(
     /// unique DMA id
     input  logic [DmaIdWidth-1:0]   dma_id_i
 );
-
+`ifndef TARGET_FORMALITY
     // This wrapper emulates the old (v.0.1.0) backend which is deprecated. Throw a warning here
     // to inform the user in simulation
     `IDMA_NONSYNTH_BLOCK(
@@ -78,7 +78,7 @@ module axi_dma_backend #(
         $warning("You are using the deprecated interface of the backend. Please update ASAP!");
     end
     )
-
+`endif
     // Parameters unavailable to old backend
     localparam int unsigned TFLenWidth  = AddrWidth;
     localparam int unsigned MemSysDepth = 0;

@@ -90,11 +90,12 @@ module dma_reg_to_axi #(
   assign reg_rsp_o.error     = '0; /* swallow errors */
 
   /* check that we don't get any errors in the simulation */
+`ifndef TARGET_FORMALITY
   `IDMA_NONSYNTH_BLOCK(
   assert property (@(posedge clk_i) (axi_rsp_i.r_valid && axi_req_o.r_ready) |-> \
                   (axi_rsp_i.r.resp == axi_pkg::RESP_OKAY));
   )
-
+`endif
   assign reg_rsp_o.ready     = ( reg_req_i.write && axi_rsp_i.w_ready) ||
                                (!reg_req_i.write && axi_rsp_i.r_valid);
 

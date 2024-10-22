@@ -13,12 +13,14 @@
 `ifndef TARGET_SYNTHESIS             \
 `ifndef TARGET_VERILATOR             \
 `ifndef TARGET_XSIM                  \
+`ifndef TARGET_FORMALITY             \
 `ifndef VERILATOR                    \
 `ifndef SYNTHESIS                    \
 `ifndef XSIM                         \
 /* pragma translate_off */           \
 __block                              \
 /* pragma translate_on */            \
+`endif                               \
 `endif                               \
 `endif                               \
 `endif                               \

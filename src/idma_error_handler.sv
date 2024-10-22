@@ -298,9 +298,11 @@ module idma_error_handler #(
                         // the counter is 0 -> no transfer in the datapath. This is an impossible
                         // state
                         end else begin
+`ifndef TARGET_FORMALITY
                             `IDMA_NONSYNTH_BLOCK(
                             $fatal(1, "No active transfer to handle!");
                             )
+`endif
                         end
                     end
                 end
@@ -333,9 +335,11 @@ module idma_error_handler #(
                     // the counter is 0 -> no transfer in the datapath. This is an impossible
                     // state
                     end else begin
+`ifndef TARGET_FORMALITY
                         `IDMA_NONSYNTH_BLOCK(
                         $fatal(1, "No active transfer to handle!");
                         )
+`endif
                     end
                 end
             end

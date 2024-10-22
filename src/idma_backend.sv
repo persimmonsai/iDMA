@@ -509,9 +509,11 @@ module idma_backend #(
         assign busy_o.eh_cnt_busy = 1'b0;
 
     end else begin : gen_param_error
+`ifndef TARGET_FORMALITY
         `IDMA_NONSYNTH_BLOCK(
         $fatal(1, "Unexpected Error Capability");
         )
+`endif
     end
 
 
@@ -628,9 +630,11 @@ module idma_backend #(
         assign w_last_burst = 1'b1;
         assign w_last_ready = 1'b1;
     end else begin : gen_last_flag_error
+`ifndef TARGET_FORMALITY
         `IDMA_NONSYNTH_BLOCK(
         $fatal(1, "Backend: last flag bypass not implemented for requested protocol!");
         )
+`endif
     end
 
     //--------------------------------------
@@ -762,9 +766,11 @@ module idma_backend #(
             .buffer_busy_o     ( busy_o.buffer_busy )
         );
     end else begin : gen_transport_layer_error
+`ifndef TARGET_FORMALITY
         `IDMA_NONSYNTH_BLOCK(
         $fatal(1, "Backend: transport layer not implemented for requested protocol!");
         )
+`endif
     end
 
     //--------------------------------------
@@ -831,6 +837,7 @@ module idma_backend #(
     //--------------------------------------
     // Assertions
     //--------------------------------------
+`ifndef TARGET_FORMALITY
     `IDMA_NONSYNTH_BLOCK(
     initial begin : proc_assert_params
         axi_addr_width : assert(AddrWidth >= 32'd12) else
@@ -852,5 +859,6 @@ module idma_backend #(
             $fatal(1, "Parameter `TFLenWidth` has to be <= `AddrWidth`!");
     end
     )
+`endif
 
 endmodule : idma_backend

@@ -37,11 +37,11 @@ sources:
   # Level 3
   - src/idma_backend.sv
   # Level 4
-  - src/legacy/axi_dma_backend.sv
+  # - src/legacy/axi_dma_backend.sv
 
   # Midends
   # Level 0
-  - src/legacy/midends/idma_2D_midend.sv
+  # - src/legacy/midends/idma_2D_midend.sv
   - src/midends/idma_nd_midend.sv
 
   # Frontends
