@@ -1,5 +1,4 @@
 # iDMA
-[![CI status](https://github.com/pulp-platform/idma/actions/workflows/gitlab-ci.yml/badge.svg?branch=master)](https://github.com/pulp-platform/idma/actions/workflows/gitlab-ci.yml?query=branch%3Amaster)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/pulp-platform/iDMA?color=blue&label=current&sort=semver)](CHANGELOG.md)
 [![SHL-0.51 license](https://img.shields.io/badge/license-SHL--0.51-green)](LICENSE)
 
@@ -12,9 +11,8 @@ and in the [PULP Cluster](https://github.com/pulp-platform/pulp).
 iDMA currently implements the following protocols:
 - [AXI4](https://developer.arm.com/documentation/ihi0022/hc/?lang=en)[+ATOPs from AXI5](https://github.com/pulp-platform/axi)
 - [AXI4 Lite](https://developer.arm.com/documentation/ihi0022/hc/?lang=en)
-- [AXI4 Stream](https://developer.arm.com/documentation/ihi0051/b/?lang=en)
 - [OBI v1.5.0](https://github.com/openhwgroup/programs/blob/master/TGs/cores-task-group/obi/OBI-v1.5.0.pdf)
-- [TileLink UH v1.8.1](https://starfivetech.com/uploads/tilelink_spec_1.8.1.pdf)
+
 
 ## Modular Architecture
 iDMA is centered around the idea to split the DMA engine in 3 distinct parts:
@@ -29,6 +27,7 @@ new capabilities.
 
 ## Documentation
 The [latest documentation](https://pulp-platform.github.io/iDMA) can be accessed pre-built.
+The [Morty docs](https://pulp-platform.github.io/iDMA/morty/index.html) provide the generated description of the SystemVerilog files within this repository.
 
 ## Publications
 If you use iDMA in your work or research, you can cite us:
@@ -234,24 +233,6 @@ The following systems/publications make use of iDMA:
 
 
 <details>
-<summary><b>Protego: A Low-Overhead Open-Source I/O Physical Memory Protection Unit for RISC-V</b></summary>
-<p>
-
-```
-@inproceedings{wistoff2023protego,
-  title={Protego: A Low-Overhead Open-Source I/O Physical Memory Protection Unit for RISC-V},
-  author={Wistoff, Nils and Kuster, Andreas and Rogenmoser, Michael and Balas, Robert and Schneider, Moritz and Benini, Luca},
-  booktitle={Proceedings of the 1st Safety and Security in Heterogeneous Open System-on-Chip Platforms Workshop (SSH-SoC 2023)},
-  year={2023},
-  organization={SSH-SoC}
-}
-```
-
-</p>
-</details>
-
-
-<details>
 <summary><b>OSMOSIS: Enabling Multi-Tenancy in Datacenter SmartNICs</b></summary>
 <p>
 
@@ -263,43 +244,6 @@ The following systems/publications make use of iDMA:
   year={2023},
   volume={abs/2309.03628},
   url={https://api.semanticscholar.org/CorpusID:261582327}
-}
-```
-
-</p>
-</details>
-
-
-<details>
-<summary><b>”Interrupting” the Status Quo: A First Glance at the RISC-V Advanced Interrupt Architecture (AIA)</b></summary>
-<p>
-
-```
-@article{marques2024interrupting,
-  title={" Interrupting" the Status Quo: A First Glance at the RISC-V Advanced Interrupt Architecture (AIA)},
-  author={Marques, Francisco and Rodr{\'\i}guez, Manuel and S{\'a}, Bruno and Pinto, Sandro},
-  journal={IEEE Access},
-  year={2024},
-  publisher={IEEE}
-}
-```
-
-</p>
-</details>
-
-
-<details>
-<summary><b>AXI-REALM: A Lightweight and Modular Interconnect Extension for Traffic Regulation and Monitoring of Heterogeneous Real-Time SoCs</b></summary>
-<p>
-
-```
-@misc{benz2023axirealm,
-  title={AXI-REALM: A Lightweight and Modular Interconnect Extension for Traffic Regulation and Monitoring of Heterogeneous Real-Time SoCs},
-  author={Thomas Benz and Alessandro Ottaviano and Robert Balas and Angelo Garofalo and Francesco Restuccia and Alessandro Biondi and Luca Benini},
-  year={2023},
-  eprint={2311.09662},
-  archivePrefix={arXiv},
-  primaryClass={cs.AR}
 }
 ```
 
@@ -338,31 +282,28 @@ We currently do not include any free and open-source simulation setup. However, 
 a simulation can be launched using:
 
 ```bash
-make idma_sim_all
-cd target/sim/vsim
-$VSIM -c -do "source compile.tcl; quit"
+make prepare_sim
+export VSIM="questa-2022.3 vsim"
+$VSIM -c -do "source scripts/compile_vsim.tcl; quit"
 $VSIM -c -t 1ps -voptargs=+acc \
-     +job_file=jobs/backend_rw_axi/simple.txt \
-     -logfile rw_axi_simple.log \
-     -wlf rw_axi_simple.wlf \
-     tb_idma_backend_rw_axi \
-     -do "source start.tcl; run -all"
+     +job_file=jobs/backend/man_same_dst_simple.txt \
+     -logfile logs/backend.simple.vsim.log \
+     -wlf logs/backend.simple.wlf \
+     tb_idma_obi_backend \
+     -do "source scripts/start_vsim.tcl; run -all"
 ```
 with gui:
-```bash
-make idma_sim_all
-cd target/sim/vsim
-$VSIM -c -do "source compile.tcl; quit"
+```
 $VSIM -t 1ps -voptargs=+acc \
-     +job_file=jobs/backend_rw_axi/simple.txt \
-     -logfile rw_axi_simple.log \
-     -wlf rw_axi_simple.wlf \
-     tb_idma_backend_rw_axi \
-     -do "source start.tcl; source wave/backend_rw_axi.do; run -all"
+     +job_file=jobs/backend/man_same_dst_simple.txt \
+     -logfile logs/backend.simple.vsim.log \
+     -wlf logs/backend.simple.wlf \
+     tb_idma_obi_backend \
+     -do "source scripts/start_vsim.tcl; source scripts/waves/vsim_obi_backend.do; run -all"
 ```
 
 Where:
-- `job_file=jobs/backend_rw_axi/simple.txt` can point to any valid [job file](jobs/README.md)
-- `-logfile rw_axi_simple.log` denotes the log file
-- `-wlf rw_axi_simple.wlf` specifies a wave file
-- `tb_idma_backend_rw_axi` can be any of the supplied testbenches
+- `+job_file=jobs/backend/man_simple.txt` can point to any valid [job file](jobs/README.md)
+- `-logfile logs/backend.simple.vsim.log` denotes the log file
+- `-wlf logs/backend.simple.wlf` specifies a wave file
+- `tb_idma_backend` can be any of the supplied testbenches \(`test/tb_idma_*`\)

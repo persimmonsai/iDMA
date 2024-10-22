@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
-# Copyright 2023 ETH Zurich and University of Bologna.
+# Copyright 2022 ETH Zurich and University of Bologna.
 # Solderpad Hardware License, Version 0.51, see LICENSE for details.
 # SPDX-License-Identifier: SHL-0.51
-
-# Authors:
-# - Thomas Benz <tbenz@iis.ee.ethz.ch>
 
 """List the amount of lines every contributor adds, and their files"""
 import sys
@@ -54,7 +51,7 @@ for file in flist:
                         if re.search(to_check, line, re.IGNORECASE):
                             todo_present |= True
                             global_todo_present |= True
-                            if author not in num_todos:
+                            if not author in num_todos:
                                 num_todos[author] = 1
                             else:
                                 num_todos[author] += 1

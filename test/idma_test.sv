@@ -1,9 +1,8 @@
-// Copyright 2023 ETH Zurich and University of Bologna.
+// Copyright 2022 ETH Zurich and University of Bologna.
 // Solderpad Hardware License, Version 0.51, see LICENSE for details.
 // SPDX-License-Identifier: SHL-0.51
-
-// Authors:
-// - Thomas Benz <tbenz@iis.ee.ethz.ch>
+//
+// Thomas Benz <tbenz@ethz.ch>
 
 `include "idma/typedef.svh"
 
@@ -21,13 +20,11 @@ package idma_test;
     class idma_job #(
         parameter bit          IsND      = 0,
         parameter int unsigned NumDim    = 2,
-        parameter int unsigned AddrWidth = 0,
-        parameter int unsigned IdWidth   = 5
+        parameter int unsigned AddrWidth = 0
     );
 
         // derived types
         typedef logic [AddrWidth-1:0] addr_t;
-        typedef logic [  IdWidth-1:0] id_t;
 
         typedef struct packed {
             addr_t reps;
@@ -39,13 +36,10 @@ package idma_test;
         addr_t                  length;
         addr_t                  src_addr;
         addr_t                  dst_addr;
-        idma_pkg::protocol_e    src_protocol;
-        idma_pkg::protocol_e    dst_protocol;
         halfw_t                 max_src_len;
         halfw_t                 max_dst_len;
         logic                   aw_decoupled;
         logic                   rw_decoupled;
-        id_t                    id;
         dim_t [NumDim-2:0]      n_dims;
         addr_t                  err_addr    [$];
         logic                   err_is_read [$];
@@ -53,12 +47,9 @@ package idma_test;
 
         // format string for pretty printing
         string format = "\n-----------------------------------------------\
-                        \niDMA %1dD job:\n num_bytes:      %d\
-                        \n src:           %s\n dst:           %s\
-                        \n src_protocol:   %s%d\n dst_protocol:   %s%d\
+                        \niDMA %1dD job:\n num_bytes:      %d\n src:           %s\n dst:           %s\
                         \n max_src_len:  %s%d\n max_dst_len:  %s%d\
-                        \n aw_decoupled:   %s%b\n rw_decoupled:   %s%b\
-                        \n id:             %s%d \n%s errors:\n%s\
+                        \n aw_decoupled:   %s%b\n rw_decoupled:   %s%b\n%s errors:\n%s\
                         \n-----------------------------------------------";
 
         // constructor: create an empty job
@@ -66,13 +57,10 @@ package idma_test;
             length       = '0;
             src_addr     = '0;
             dst_addr     = '0;
-            src_protocol = idma_pkg::AXI;
-            dst_protocol = idma_pkg::AXI;
             max_src_len  = '0;
             max_dst_len  = '0;
             aw_decoupled = '0;
             rw_decoupled = '0;
-            id           = '0;
             n_dims       = '0;
             err_addr     = {};
             err_is_read  = {};
@@ -141,10 +129,6 @@ package idma_test;
                              this.length,
                              format_hex(this.src_addr),
                              format_hex(this.dst_addr),
-                             indent(1, AddrWidth),
-                             this.src_protocol,
-                             indent(1, AddrWidth),
-                             this.dst_protocol,
                              indent(3, AddrWidth),
                              this.max_src_len,
                              indent(3, AddrWidth),
@@ -153,8 +137,6 @@ package idma_test;
                              this.aw_decoupled,
                              indent(1, AddrWidth),
                              this.rw_decoupled,
-                             indent(1, AddrWidth),
-                             this.id,
                              IsND ? format_dimensions() : "",
                              format_errors()
                             );
@@ -180,7 +162,7 @@ package idma_test;
         typedef logic [AddrWidth-1:0] addr_t;
 
         // model memory: byte-based
-        byte_t mem [idma_pkg::protocol_e][addr_t];
+        byte_t mem [addr_t];
 
         // constructor
         function new ();
@@ -241,26 +223,20 @@ package idma_test;
 
         // write memory array
         function void write_byte (
-            byte_t               wbyte,
-            addr_t               addr,
-            idma_pkg::protocol_e protocol
+            byte_t wbyte,
+            addr_t addr
         );
-            //$display("Model Writing to Protocol: %d Addr: %d Data: %d", protocol, addr, wbyte);
-            this.mem[protocol][addr] = wbyte;
+            this.mem[addr] = wbyte;
         endfunction
 
         // read memory array
         function byte_t read_byte (
-            addr_t addr,
-            idma_pkg::protocol_e protocol
+            addr_t addr
         );
-            byte_t rbyte;
-            if (mem.exists(protocol) && mem[protocol].exists(addr))
-                rbyte = this.mem[protocol][addr];
+            if (mem.exists(addr))
+                return this.mem[addr];
             else
-                rbyte = 'x;
-            //$display("Model Reading from Protocol: %d Addr: %d RData: %d", protocol, addr, rbyte);
-            return rbyte;
+                return 'x;
         endfunction
 
         // model a DMA transfer
@@ -271,10 +247,6 @@ package idma_test;
             addr_t   src_addr,
             // destination address
             addr_t   dst_addr,
-            // source protocol
-            idma_pkg::protocol_e src_protocol,
-            // dest protocol
-            idma_pkg::protocol_e dst_protocol,
             // maximum length of a burst (in bytes)
             halfw_t  max_src_len,
             // maximum length of a burst (in bytes)
@@ -410,8 +382,8 @@ package idma_test;
                 // how error is handled
                 // no error
                 if (!aborted & !read_error & !write_error) begin
-                    temp = read_byte(src_ptr, src_protocol);
-                    write_byte(temp, dst_ptr, dst_protocol);
+                    temp = read_byte(src_ptr);
+                    write_byte(temp, dst_ptr);
                     if (ModelOutput) begin
                         $display("Read  %h from 0x%h", temp, src_ptr);
                         $display("Write %h to   0x%h", temp, dst_ptr);
@@ -455,7 +427,7 @@ package idma_test;
                     end
                     // write
                     if (!aborted) begin
-                        write_byte(temp, dst_ptr, dst_protocol);
+                        write_byte(temp, dst_ptr);
                         if (ModelOutput)
                             $display("Write %h to   0x%h", temp, dst_ptr);
                     end
@@ -679,23 +651,16 @@ package idma_test;
             input tf_len_t    length,
             input addr_t      src_addr,
             input addr_t      dst_addr,
-            input idma_pkg::protocol_e src_protocol,
-            input idma_pkg::protocol_e dst_protocol,
             input logic       decouple_aw,
             input logic       decouple_rw,
             input logic [2:0] src_max_llen,
             input logic [2:0] dst_max_llen,
             input logic       src_reduce_len,
-            input logic       dst_reduce_len,
-            input id_t        id
+            input logic       dst_reduce_len
         );
             idma.req.length                 <= #TA length;
             idma.req.src_addr               <= #TA src_addr;
-            idma.req.src_addr               <= #TA src_addr;
             idma.req.dst_addr               <= #TA dst_addr;
-            idma.req.opt.src_protocol       <= #TA src_protocol;
-            idma.req.opt.dst_protocol       <= #TA dst_protocol;
-            idma.req.opt.axi_id             <= #TA id;
             idma.req.opt.beo.decouple_aw    <= #TA decouple_aw;
             idma.req.opt.beo.decouple_rw    <= #TA decouple_rw;
             idma.req.opt.beo.src_max_llen   <= #TA src_max_llen;
@@ -709,8 +674,6 @@ package idma_test;
             idma.req.length                 <= #TA '0;
             idma.req.src_addr               <= #TA '0;
             idma.req.dst_addr               <= #TA '0;
-            idma.req.opt.axi_id             <= #TA '0;
-            idma.req.opt.dst.prot           <= #TA '0;
             idma.req.opt.beo.decouple_aw    <= #TA '0;
             idma.req.opt.beo.decouple_rw    <= #TA '0;
             idma.req.opt.beo.src_max_llen   <= #TA '0;
@@ -847,8 +810,6 @@ package idma_test;
             input tf_len_t                  length,
             input addr_t                    src_addr,
             input addr_t                    dst_addr,
-            input idma_pkg::protocol_e      src_protocol,
-            input idma_pkg::protocol_e      dst_protocol,
             input logic                     decouple_aw,
             input logic                     decouple_rw,
             input logic [2:0]               src_max_llen,
@@ -860,8 +821,6 @@ package idma_test;
             nd_idma.req.burst_req.length                 <= #TA length;
             nd_idma.req.burst_req.src_addr               <= #TA src_addr;
             nd_idma.req.burst_req.dst_addr               <= #TA dst_addr;
-            nd_idma.req.burst_req.opt.src_protocol       <= #TA src_protocol;
-            nd_idma.req.burst_req.opt.dst_protocol       <= #TA dst_protocol;
             nd_idma.req.burst_req.opt.beo.decouple_aw    <= #TA decouple_aw;
             nd_idma.req.burst_req.opt.beo.decouple_rw    <= #TA decouple_rw;
             nd_idma.req.burst_req.opt.beo.src_max_llen   <= #TA src_max_llen;

@@ -1,8 +1,7 @@
 # Job Files
 
 The basic verification of the iDMA IPs is based on file-based SystemVerilog testbenches. The files
-read by the testbenches are called *job files*. A generation facility will be provided soon.
-Contact the maintainers if you require the generator.
+read by the testbenches are called *job files*.
 
 ## Job File Format
 
@@ -15,8 +14,6 @@ respectively.
 - 1D length in bytes *unsigned int*
 - Source address *hex*
 - Destination address *hex*
-- Source protocol index *int*
-- Destination protocol index *int*
 - Maximum source burst size in beats *unsigned int*
 - Maximum destination burst size in beats *unsigned int*
 - Decouple R - AW channels *bit*
@@ -31,8 +28,6 @@ respectively.
 128
 0x0
 0x1000
-0
-0
 256
 256
 0
@@ -46,8 +41,6 @@ respectively.
 128
 0x0
 0x1000
-0
-0
 256
 256
 0
@@ -61,8 +54,6 @@ rc0x4
 - 1D length in bytes *unsigned int*
 - Source address *hex*
 - Destination address *hex*
-- Source protocol index *int*
-- Destination protocol index *int*
 - Maximum source burst size in beats *unsigned int*
 - Maximum destination burst size in beats *unsigned int*
 - Decouple R - AW channels *bit*
@@ -81,8 +72,6 @@ rc0x4
 4
 0x0
 0x1000
-0
-0
 256
 256
 0
